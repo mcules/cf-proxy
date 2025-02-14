@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "dependencies": {
+    "@sap/approuter": "^13.0.1",
+    "cors": "^2.8.5"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
