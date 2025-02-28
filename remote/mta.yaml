@@ -1,9 +1,16 @@
 _schema-version: '3.2'
 ID: cf-destination-proxy
-version: 1.1.29
+version: 1.2.0
 
 parameters:
   enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install --no-package-lock
+        - cf enable-ssh cf-destination-proxy
 
 modules:
   - name: cf-destination-proxy
@@ -28,7 +35,7 @@ resources:
     parameters:
       path: ./xs-security.json
       service: xsuaa
-      service-plan: broker
+      service-plan: application
   - name: cf-destination-proxy-connectivity
     type: org.cloudfoundry.managed-service
     parameters:
@@ -39,10 +46,3 @@ resources:
     parameters:
       service: destination
       service-plan: lite
-
-build-parameters:
-  before-all:
-    - builder: custom
-      commands:
-        - npm install --no-package-lock
-        - cf enable-ssh cf-destination-proxy

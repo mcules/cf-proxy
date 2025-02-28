@@ -15,9 +15,7 @@ const getCloudFoundryURL = (route, service) => {
   }
   const region = match[1];
 
-  const generatedURL = `https://${service}.cf.${region}.hana.ondemand.com`;
-
-  return generatedURL;
+  return `https://${service}.cf.${region}.hana.ondemand.com`;
 };
 
 const authenticate = async (route) => {
