@@ -9,6 +9,16 @@ const {cfServiceCredentials} = require("@sap/xsenv");
 const {createSecurityContext, requests: {requestClientCredentialsToken}} = require("@sap/xssec");
 const {UAA_INSTANCE_NAME} = require("../constants");
 
+/**
+ * Asynchronously loads environment files from the specified directory.
+ *
+ * This method searches for files in the given directory matching the ".env" naming pattern
+ * (e.g., `.env`, `.1.env`, etc.), resolves their paths, and loads their configuration
+ * using the `config` function for environment variable setup.
+ *
+ * @param {string} envPath - The path to the directory where the environment files are located.
+ * @return {Promise<void>} A promise that resolves when all matching environment files are loaded.
+ */
 async function loadFiles(envPath) {
     const resolvedPath = resolve(process.cwd(), envPath);
     const files = await readdir(resolvedPath);
@@ -18,6 +28,12 @@ async function loadFiles(envPath) {
     envPaths.forEach((path) => config({path}));
 }
 
+/**
+ * Checks whether the provided token is expired.
+ *
+ * @param {string} token - The token to be validated for expiration.
+ * @return {Promise<boolean>} A promise that resolves to true if the token is expired, false otherwise. Rejects with an error if validation fails due to reasons other than expiration.
+ */
 function isTokenExpired(token) {
     if (!token) {
         return Promise.resolve(true);
@@ -40,6 +56,12 @@ function isTokenExpired(token) {
     });
 }
 
+/**
+ * Fetches a new proxy authentication token from the service credentials.
+ *
+ * @return {Promise<object>} A promise that resolves to the token object if successful,
+ * or rejects with an error if the token retrieval fails.
+ */
 function fetchToken() {
     console.log("[info]", "Fetching new proxy token...");
 
@@ -64,6 +86,14 @@ function fetchToken() {
     });
 }
 
+/**
+ * Starts a proxy server that forwards incoming requests to a target specified by the CFDP_TARGET environment variable.
+ * Handles authorization tokens and supports logging of proxy activity.
+ *
+ * @param {number} port - The port number on which the proxy server will listen for incoming requests.
+ * @param {boolean} log - A flag to enable or disable logging of proxy activities.
+ * @return {void} Does not return any value.
+ */
 function run(port, log) {
     const target = process.env.CFDP_TARGET;
     if (!target) {

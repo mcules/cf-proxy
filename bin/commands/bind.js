@@ -8,12 +8,12 @@ const {URLSearchParams} = require("url");
 const {DESTINATION_INSTANCE_NAME, UAA_INSTANCE_NAME} = require("../constants");
 
 /**
- * Constructs a Cloud Foundry service URL based on the given route and service.
+ * Constructs a Cloud Foundry URL for the specified service and region derived from the provided route.
  *
- * @param {string} route - The route URL from which the region will be parsed. Must follow the `.cfapps.<region>.hana.ondemand.com` pattern.
- * @param {string} service - The name of the Cloud Foundry service.
- * @return {string} The constructed Cloud Foundry service URL in the format `https://<service>.cf.<region>.hana.ondemand.com`.
- * @throws {Error} If the route format is invalid or the region cannot be parsed.
+ * @param {string} route - The route string containing the region information in the format `.cfapps.<region>.hana.ondemand.com`.
+ * @param {string} service - The name of the Cloud Foundry service for which the URL is constructed.
+ * @return {string} The constructed Cloud Foundry URL for the given service and region.
+ * @throws {Error} If the route does not match the expected format.
  */
 function getCloudFoundryURL(route, service) {
     const match = route.match(/\.cfapps\.([\w-]+)\.hana\.ondemand\.com/);
@@ -27,11 +27,12 @@ function getCloudFoundryURL(route, service) {
 }
 
 /**
- * Authenticates the user against a Cloud Foundry (CF) instance and retrieves the necessary authentication headers.
- * Handles token validation, and if required, initiates Single Sign-On (SSO) login flow for authentication.
+ * Authenticates the user with Cloud Foundry and retrieves necessary API credentials.
+ * If the current session is not authenticated, it initiates an SSO login process.
  *
- * @param {string} route - The base route or identifier used to construct the CF API URL.
- * @return {Promise<Object>} A promise that resolves to an object containing the `baseURL` and `headers` necessary for making authenticated requests. The `headers` include the `Authorization` token.
+ * @param {string} route - The base route or domain to construct the Cloud Foundry API URL.
+ * @return {Promise<{baseURL: string, headers: {Authorization: string}}>} A promise resolving to an object containing the API base URL and authorization headers.
+ * @throws {Error} If an authentication or SSO login error occurs.
  */
 async function authenticate(route) {
     console.log("[info]", "Checking CF authentication...");
@@ -77,12 +78,12 @@ async function authenticate(route) {
 }
 
 /**
- * Retrieves the GUID of an application associated with the provided URL by querying the Cloud Foundry API.
+ * Retrieves the application GUID (Globally Unique Identifier) associated with the given URL.
  *
- * @param {string} url - The URL of the application for which the GUID is to be fetched.
- * @param {object} authContext - The authentication context, which includes necessary credentials for accessing the Cloud Foundry API.
- * @return {Promise<string>} The GUID of the application linked to the provided URL.
- * @throws {Error} If the host cannot be extracted from the URL, or if the API request fails.
+ * @param {string} url - The target URL to fetch application details for.
+ * @param {Object} authContext - The authentication context object required to make API requests.
+ * @return {Promise<string>} Resolves with the application GUID as a string.
+ * @throws {Error} Throws an error if the host extraction fails, the API request fails, or the response does not contain the expected data.
  */
 async function getAppGuid(url, authContext) {
     console.log("[info]", `Fetching app details for ${url}...`);
@@ -124,13 +125,13 @@ async function getAppGuid(url, authContext) {
 }
 
 /**
- * Retrieves the credentials for a specified service associated with a given application GUID and authentication context.
+ * Fetches the service credentials for a specified service using the provided application GUID and authentication context.
  *
- * @param {string} service - The name of the service for which credentials are being fetched.
- * @param {string} appGuid - The GUID of the application associated with the service.
- * @param {Object} authContext - The authentication context required to access the cloud service API.
- * @return {Promise<Object>} A promise resolving to the credentials object containing service credentials.
- * @throws {Error} If no credentials bindings are found for the specified service.
+ * @param {string} service - The name of the service instance for which to retrieve credentials.
+ * @param {string} appGuid - The GUID of the application associated with the service instance.
+ * @param {object} authContext - The authentication context required for the Cloud Foundry API requests.
+ * @return {Promise<object>} A promise that resolves with the service credentials for the specified service.
+ * @throws {Error} If no bindings are found for the specified service or an API call fails.
  */
 async function getServiceCredentials(service, appGuid, authContext) {
     console.log("[info]", `Fetching service credentials for ${service}...`);
@@ -149,15 +150,14 @@ async function getServiceCredentials(service, appGuid, authContext) {
 }
 
 /**
- * Fetches the destination details from the provided credentials.
+ * Fetches destination details from the provided credentials.
  *
- * @param {Object} credentials An object containing the connection details.
- * @param {string} credentials.uri The URI endpoint for the destinations API.
- * @param {string} credentials.url The URL endpoint for the OAuth token request.
- * @param {string} credentials.clientid The client ID used for authentication.
- * @param {string} credentials.clientsecret The client secret used for authentication.
- * @return {Promise<Array<Object>>} A promise that resolves to an array of destination details,
- * each containing a `name` property and other additional properties.
+ * @param {Object} credentials - The credentials used to authenticate and retrieve destination details.
+ * @param {string} credentials.uri - The URI endpoint for the destination service.
+ * @param {string} credentials.url - The URL for the authentication server.
+ * @param {string} credentials.clientid - The client ID for authentication.
+ * @param {string} credentials.clientsecret - The client secret for authentication.
+ * @return {Promise<Array<Object>>} A promise that resolves to an array of destination objects. Each object contains the destination name and additional properties.
  */
 async function getDestinationDetails(credentials) {
     const {uri, url, clientid, clientsecret} = credentials;
@@ -180,12 +180,12 @@ async function getDestinationDetails(credentials) {
 }
 
 /**
- * Builds the environment configuration string including VCAP_SERVICES, destinations, and target options.
+ * Builds an environment variable string with necessary service credentials, destinations, and target configuration.
  *
- * @param {string} route - The base URL of the service route.
- * @param {number} proxyPort - The port number to be used for the proxy configuration.
- * @param {object} authContext - The authentication context required to access services and retrieve credentials.
- * @return {Promise<string>} A promise that resolves to the formatted environment configuration string.
+ * @param {string} route - The base route URL for the application.
+ * @param {number} proxyPort - The port number for the proxy server.
+ * @param {object} authContext - The authentication context containing credentials for API calls.
+ * @return {Promise<string>} A promise that resolves to a formatted environment variable string containing service credentials, destination mappings, and target configuration.
  */
 async function buildEnv(route, proxyPort, authContext) {
     const appGuid = await getAppGuid(route, authContext);
@@ -214,11 +214,12 @@ async function buildEnv(route, proxyPort, authContext) {
 }
 
 /**
- * Writes environment variables to a file. If a file with the same name exists, it creates a new file with an incremented name.
+ * Writes environment variables to a `.env` file in the specified directory. If a file with the default name
+ * `.env` already exists, it appends an index to the file name and retries until a unique file name is found.
  *
- * @param {string} env - The environment variables to be written to the file.
- * @param {string} envPath - The directory path where the environment file should be created.
- * @return {Promise<void>} Resolves when the environment file is successfully written.
+ * @param {string} env The environment variables content to write to the file.
+ * @param {string} envPath The directory path where the `.env` file should be created.
+ * @return {Promise<void>} A promise that resolves when the file has been successfully written.
  */
 async function writeEnv(env, envPath) {
     const baseFileName = ".env";

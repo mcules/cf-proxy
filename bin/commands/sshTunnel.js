@@ -1,10 +1,10 @@
 const {execSync, spawn} = require("child_process");
 
 /**
- * Retrieves the process ID (PID) of the process that is using the specified port.
+ * Retrieves the process ID (PID) of the process running on the specified port.
  *
- * @param {number} port - The port number to check for an associated process.
- * @return {string|null} Returns the PID of the process using the specified port, or null if no process is found or an error occurs.
+ * @param {number} port - The port number to check for an active process.
+ * @return {string|null} The PID of the process running on the specified port, or null if no process is found or an error occurs.
  */
 function getProcessOnPort(port) {
     try {
@@ -21,9 +21,10 @@ function getProcessOnPort(port) {
 }
 
 /**
- * Terminates a process by its process ID (PID).
+ * Terminates a process with the specified process ID (PID).
+ * Uses the 'taskkill' command to forcefully kill the process.
  *
- * @param {number} pid - The process ID of the process to be terminated.
+ * @param {number} pid The process ID of the process to terminate.
  * @return {void} Does not return a value.
  */
 function killProcessByPid(pid) {
@@ -35,23 +36,24 @@ function killProcessByPid(pid) {
 }
 
 /**
- * Suspends the execution of the program for a specified duration.
+ * Pauses the execution of code for the specified number of milliseconds.
  *
- * @param {number} ms - The number of milliseconds to pause execution.
- * @return {Promise<void>} A promise that resolves after the specified duration.
+ * @param {number} ms - The number of milliseconds to sleep before resolving the Promise.
+ * @return {Promise<void>} A Promise that resolves after the specified delay.
  */
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
- * Establishes an SSH tunnel to a remote host via a Cloud Foundry application.
- * If the specified port is already in use, the process occupying the port will be terminated before establishing the new tunnel.
+ * Starts an SSH tunnel to the specified remote host and port via the given Cloud Foundry application.
+ * If the specified port is already in use, the existing process using the port will be stopped.
  *
- * @param {string} cfApp - The name of the Cloud Foundry application to establish the tunnel through.
- * @param {string} remoteHost - The remote host to connect to via the SSH tunnel.
- * @param {number} port - The local port to use for the SSH tunnel.
- * @return {Promise<void>} Resolves when the process of starting the SSH tunnel has completed. Logs status messages during the operation.
+ * @param {string} cfApp - The name of the Cloud Foundry application to connect to using `cf ssh`.
+ * @param {string} remoteHost - The remote host to which the tunnel should redirect traffic.
+ * @param {number} port - The local port to bind the tunnel to.
+ *
+ * @return {Promise<void>} Resolves when the tunnel is successfully started or attempts to start have been exhausted.
  */
 async function startTunnel(cfApp, remoteHost, port) {
     let pid = getProcessOnPort(port);
@@ -97,10 +99,10 @@ async function startTunnel(cfApp, remoteHost, port) {
 }
 
 /**
- * Stops an SSH tunnel running on the specified port, if it exists.
+ * Stops the SSH tunnel running on the specified port.
  *
- * @param {number} port - The port number of the SSH tunnel to stop.
- * @return {void} Does not return a value.
+ * @param {number} port - The port number where the SSH tunnel is running.
+ * @return {void} No return value.
  */
 function stopTunnel(port) {
     const pid = getProcessOnPort(port);
