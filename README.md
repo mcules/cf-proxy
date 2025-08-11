@@ -1,6 +1,7 @@
-# cf-destination-proxy Setup Guide
+# cf-proxy Setup Guide
+The `cf-proxy` tool simplifies the connection between local applications and remote services hosted on SAP BTP. It enables developers to deploy applications to SAP BTP via Cloud Foundry, set up a local proxy to route requests securely, and integrate XSUAA and Destination services for authentication and connectivity. Additionally, it supports creating SSH tunnels for secure access to remote resources. This tool is particularly useful for testing, debugging, and securely interacting with cloud services directly from a local environment.
 
-This guide provides instructions for setting up and configuring a local proxy to connect with a remote `cf-destination-proxy` service. By following the steps outlined below, you will:
+This guide provides instructions for setting up and configuring a local proxy to connect with a remote `cf-proxy` service. By following the steps outlined below, you will:
 - Set environment variables for proxy usage.
 - Install the project dependencies.
 - Configure scripts and bindings for XSUAA and proxy startup.
