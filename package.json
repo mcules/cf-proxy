@@ -6,8 +6,7 @@
     "node": "^20.18"
   },
   "bin": {
-    "cf-destination-proxy": "./bin/cf-destination-proxy.js",
-    "cf-ssh-proxy": "./bin/cf-ssh-proxy.js"
+    "cf-proxy": "./bin/cf-proxy.js"
   },
   "devDependencies": {
     "cross-var": "^1.1.0",
@@ -16,7 +15,7 @@
   "dependencies": {
     "@sap/xsenv": "^3.1.0",
     "@sap/xssec": "3.6.0",
-    "axios": "1.7.8",
+    "axios": "1.11.0",
     "commander": "^13.1.0",
     "dotenv": "^8.2.0",
     "http-proxy": "^1.18.1",

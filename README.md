@@ -87,7 +87,7 @@ npm install -g .
 Create a `.env` file in the root directory, which binds the proxy to a remote service:
 
 ```bash
-cf-destination-proxy bind https://cf-proxy.cfapps.eu10.hana.ondemand.com
+cf-proxy bind https://cf-proxy.cfapps.eu10.hana.ondemand.com
 ```
 **Replace** `https://cf-proxy.cfapps.eu10.hana.ondemand.com` with the URL of your SAP BTP destination proxy's endpoint.
 
@@ -95,7 +95,7 @@ cf-destination-proxy bind https://cf-proxy.cfapps.eu10.hana.ondemand.com
 To start the proxy locally, add the following to your `app/package.json` file’s `scripts` section:
 
 ```
-"proxy": "cf-destination-proxy run"
+"proxy": "cf-proxy run"
 ```
 
 ### XSUAA Binding Configuration

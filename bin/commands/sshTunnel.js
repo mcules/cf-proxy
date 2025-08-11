@@ -1,6 +1,11 @@
-const { execSync, spawn } = require("child_process");
+const {execSync, spawn} = require("child_process");
 
-// Function to check if a process is using the given port
+/**
+ * Retrieves the process ID (PID) of the process that is using the specified port.
+ *
+ * @param {number} port - The port number to check for an associated process.
+ * @return {string|null} Returns the PID of the process using the specified port, or null if no process is found or an error occurs.
+ */
 function getProcessOnPort(port) {
     try {
         const result = execSync(`netstat -ano | findstr :${port}`).toString();
@@ -15,7 +20,12 @@ function getProcessOnPort(port) {
     }
 }
 
-// Function to terminate a process by PID
+/**
+ * Terminates a process by its process ID (PID).
+ *
+ * @param {number} pid - The process ID of the process to be terminated.
+ * @return {void} Does not return a value.
+ */
 function killProcessByPid(pid) {
     try {
         execSync(`taskkill /PID ${pid} /F`);
@@ -24,12 +34,25 @@ function killProcessByPid(pid) {
     }
 }
 
-// Sleep function (Replaces timeout)
+/**
+ * Suspends the execution of the program for a specified duration.
+ *
+ * @param {number} ms - The number of milliseconds to pause execution.
+ * @return {Promise<void>} A promise that resolves after the specified duration.
+ */
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Start SSH Tunnel
+/**
+ * Establishes an SSH tunnel to a remote host via a Cloud Foundry application.
+ * If the specified port is already in use, the process occupying the port will be terminated before establishing the new tunnel.
+ *
+ * @param {string} cfApp - The name of the Cloud Foundry application to establish the tunnel through.
+ * @param {string} remoteHost - The remote host to connect to via the SSH tunnel.
+ * @param {number} port - The local port to use for the SSH tunnel.
+ * @return {Promise<void>} Resolves when the process of starting the SSH tunnel has completed. Logs status messages during the operation.
+ */
 async function startTunnel(cfApp, remoteHost, port) {
     let pid = getProcessOnPort(port);
     if (pid) {
@@ -73,6 +96,12 @@ async function startTunnel(cfApp, remoteHost, port) {
     }
 }
 
+/**
+ * Stops an SSH tunnel running on the specified port, if it exists.
+ *
+ * @param {number} port - The port number of the SSH tunnel to stop.
+ * @return {void} Does not return a value.
+ */
 function stopTunnel(port) {
     const pid = getProcessOnPort(port);
     if (pid) {
