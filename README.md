@@ -107,7 +107,6 @@ If you use XSUAA services, include the binding script in the root `package.json`
 
 **Replace** `XSUAA-RESOURCE-NAME` with the name of your XSUAA service instance. This binds your application securely to the respective resource.
 
-
 ### Add proxy environment variables
 
 #### Windows
@@ -129,3 +128,24 @@ Once all steps are completed, you can:
 1. Run the proxy using `npm run proxy`.
 2. Test your application to ensure proxy settings are applied correctly.
 3. Refer to the official documentation for additional features or advanced configurations.
+
+## Starting and Stopping an SSH Tunnel
+An SSH tunnel establishes a secure connection between your local machine and a remote host—useful for accessing resources through a Cloud Foundry application. The `cf-proxy` utility provides commands to easily start and stop an SSH tunnel.
+
+### **Start the SSH Tunnel**
+To start the SSH tunnel, use the following command:
+
+```shell script
+cf-proxy sshTunnel:start <cf_app> <remote_host> [port]
+```
+- `<cf_app>`: The name of the Cloud Foundry application.
+- `<remote_host>`: The hostname or IP address of the remote server you want to connect to.
+- `[port]` (optional): The local port for the SSH tunnel. Defaults to `1348` if not specified.
+
+### **Stop the SSH Tunnel**
+To stop the SSH tunnel running on a specific local port, use the following command:
+
+```shell script
+cf-proxy sshTunnel:stop --port <port>
+```
+- `<port>`: The local port on which the SSH tunnel is running.
