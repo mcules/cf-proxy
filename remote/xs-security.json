@@ -1,7 +1,7 @@
 {
-  "xsappname": "cf-destination-proxy",
+  "xsappname": "cf-proxy",
   "tenant-mode": "dedicated",
-  "description": "cf-destination-proxy access",
+  "description": "cf-proxy access",
   "scopes": [
     {
       "name": "uaa.user",

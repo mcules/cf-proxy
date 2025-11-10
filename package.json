@@ -23,6 +23,6 @@
   },
   "scripts": {
     "build": "mbt build --source=./remote --target=../mta_archives",
-    "dev:deploy": "npm run build && cross-var cf deploy mta_archives/cf-destination-proxy_$npm_package_version.mtar --delete-services"
+    "deploy": "npm run build && cross-var cf deploy mta_archives/cf-proxy_$npm_package_version.mtar --delete-services"
   }
 }

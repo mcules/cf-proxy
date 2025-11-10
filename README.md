@@ -26,11 +26,10 @@ cd remote
 #### 2. **Login to SAP BTP Cloud Foundry**
 Log in to the Cloud Foundry environment using the following command:
 ``` bash
-cf login -a <API_ENDPOINT> -u <USERNAME> -o <ORG> -s <SPACE>
+cf login -a <API_ENDPOINT> -o <ORG> -s <SPACE> --sso
 ```
 Replace:
 - `<API_ENDPOINT>`: Your BTP API endpoint (e.g., `https://api.cf.<region>.hana.ondemand.com`).
-- `<USERNAME>`: Your BTP username.
 - `<ORG>`: Your organization name in BTP.
 - `<SPACE>`: Your space name in BTP.
 
@@ -39,11 +38,12 @@ If additional configuration is needed, modify the file accordingly.
 #### 3. **Deploy the Application**
 Deploy the remote app to SAP BTP using the following command:
 ``` bash
-cf push
+npm run deploy
 ```
 
-The `cf push` command will:
-- Upload the application from the `/remote` folder.
+The `npm run deploy` command will:
+- Build the application from the `/remote` folder.
+- Upload the application.
 - Bind any configured services from the `manifest.yml`.
 - Start the application in your specified space.
 

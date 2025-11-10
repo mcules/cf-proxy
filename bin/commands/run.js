@@ -134,13 +134,13 @@ function run(port, log) {
 
     process.on("SIGINT", () => {
         server.close(() => {
-            console.log("[info]", "cf-destination-proxy shutting down");
+            console.log("[info]", "cf-proxy shutting down");
             process.exit(0);
         });
     });
 
     server.listen(port);
-    console.log("[info]", `cf-destination-proxy running on port ${port}`);
+    console.log("[info]", `cf-proxy running on port ${port}`);
 }
 
 module.exports = async (options) => {
