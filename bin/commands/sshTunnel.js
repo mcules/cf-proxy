@@ -51,11 +51,12 @@ function sleep(ms) {
  *
  * @param {string} cfApp - The name of the Cloud Foundry application to connect to using `cf ssh`.
  * @param {string} remoteHost - The remote host to which the tunnel should redirect traffic.
+ * @param remotePort
  * @param {number} port - The local port to bind the tunnel to.
  *
  * @return {Promise<void>} Resolves when the tunnel is successfully started or attempts to start have been exhausted.
  */
-async function startTunnel(cfApp, remoteHost, port) {
+async function startTunnel(cfApp, remoteHost, remotePort, port) {
     let pid = getProcessOnPort(port);
     if (pid) {
         console.log(`⚠️ Port ${port} is already in use by process PID ${pid}.`);
@@ -65,7 +66,7 @@ async function startTunnel(cfApp, remoteHost, port) {
     console.log(`🔄 Establishing SSH tunnel...`);
 
     try {
-        const sshTunnel = spawn("cf", ["ssh", "-L", `localhost:${port}:${remoteHost}:${port}`, cfApp, "-N"], {
+        const sshTunnel = spawn("cf", ["ssh", "-L", `localhost:${port}:${remoteHost}:${remotePort}`, cfApp, "-N"], {
             detached: true,
             stdio: "ignore"
         });

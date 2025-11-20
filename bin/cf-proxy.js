@@ -94,7 +94,7 @@ configureCommand(
     "Start the SSH tunnel to the specified Cloud Foundry app",
     [],
     startTunnel,
-    ["<cf_app>", "<remote_host>", "[port]"]
+    ["<cf_app>", "<remote_host>", "[remote port]", "[port]"]
 );
 
 configureCommand(
